@@ -238,6 +238,7 @@ You can pass the `--fields` option after a command to get a list of all possible
 |<<api-mgr tiers edit>> | Edit SLA tier
 |<<api-mgr tiers list>> | Lists API version SLA tiers
 |<<api-mgr tiers reactivate>> | Reactivate SLA tier
+|<<api-mgr proxy download>> | Download a ZIP archive of a proxy to a local directory
 |===
 
 === Commands for Administrating your Design Center Applications
@@ -266,8 +267,12 @@ You can pass the `--fields` option after a command to get a list of all possible
 |<<exchange asset page modify>> | Changes an asset's description page from Exchange
 |<<exchange asset page upload>> | Uploads an asset's description page from Exchange
 |<<exchange asset page delete>> | Deletes an asset's description page from Exchange
+|<<exchange asset page list>> | List all pages for a given asset
 |<<exchange asset copy>> | Copies an Exchange asset
 |<<exchange asset delete>> | Deletes an asset from Exchange
+|<<exchange asset deprecate>> | Deprecates an asset
+|<<exchange asset undeprecate>> | Undeprecate an asset
+|<<exchange asset describe>> | Show a given asset's information
 |===
 
 === Commands for Administrating your CloudHub Application
@@ -1212,6 +1217,16 @@ Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this 
 This command reactivates the SLA tier passed in `tierId` for the API and version passed in `apiName` and `apiVersion`. +
 This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
 
+=== api-mgr proxy download
+
+[source,Example]
+----
+> api-mgr proxy download [options] <apiName> <apiVersion> <directory>
+----
+
+This command download a ZIP archive of the proxy used by <apiName> and <apiVersion> to the local directory passed in <directory>. +
+Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this command also takes the `-gatewayVersion` option.  If not specified, the command defaults to the latest version.
+
 === designcenter project create
 
 [source,Example]
@@ -1328,13 +1343,12 @@ This command does not take any options, except for the default ones: `--help`, `
 
 [source,Example]
 ----
-> exchange asset upload [options] <assetIdentifier> <zipfile>
+> exchange asset upload [options] <assetIdentifier> [filePath]
 ----
 
-This command uploads the ZIP file passed in <zipfile> as an asset to Exchange using the Ids passed in <assetIdentifier>. +
-
-The ZIP file must include an "exchange.json" file describing the asset.
-Argument "assetIdentifier" must be formatted as: <groupId>/<assetId>/<version>.
+This command upload an oas, wsdl, http or custom asset using the IDs passed in <assetIdentifier>. +
+If [filePath] points to a ZIP archive file, that archive must include an "exchange.json" file describing the asset. +
+Argument "assetIdentifier" should be formatted as follows: <group_id>/<asset_id>/<version>.
 
 Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this command also takes:
 
@@ -1355,7 +1369,8 @@ Valid classifiers are `custom`, `oas`, and `wsdl`.
 ----
 
 This command modifies the Exchange asset identified with <assetIdentifier>. +
-The "assetIdentifier" argument must be formatted as: <groupId>/<assetId>/<version>.
+Argument "assetIdentifier" should be formatted as follows: ([group_id]/)<asset_id>/<version>. +
+If "group_id" is not specified, it will default to the currently selected Organization ID.
 
 Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this command also takes:
 
@@ -1374,7 +1389,8 @@ Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this 
 ----
 
 This command downloads the Exchange asset identified with <assetIdentifier> to the directory passed in <directory>. +
-The "assetIdentifier" argument must be formatted as: <groupId>/<assetId>/<version>.
+Argument "assetIdentifier" should be formatted as follows: ([group_id]/)<asset_id>/<version>. +
+If "group_id" is not specified, it will default to the currently selected Organization ID.
 
 This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
 
@@ -1411,7 +1427,8 @@ Besides the default `--help`, `-f`/`--fields` and `-o`/`--output` options, this 
 This command downloads the description page specified in [pageName], for the Exchange asset identified with <assetIdentifier> to the directory passed in <directory>. +
 If [pageName] is not specified, this command downloads all pages.
 
-The "assetIdentifier" argument must be formatted as: <groupId>/<assetId>/<version>. +
+Argument "assetIdentifier" should be formatted as follows: ([group_id]/)<asset_id>/<version>. +
+If "group_id" is not specified, it will default to the currently selected Organization ID. +
 The description page in downloaded in Markdown format. When "name" is not specified, all pages are downloaded.
 
 This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
@@ -1455,6 +1472,19 @@ This command does not prompt twice before deleting. If you send a delete instruc
 
 This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
 
+=== exchange asset page list
+
+[source,Example]
+----
+> exchange asset page list <assetIdentifier>
+----
+
+This command List all pages for the asset passed in <assetIdentifier>. +
+Argument "assetIdentifier" should be formatted as follows: <group_id>/<asset_id>/<version>.
+
+This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
+
+
 === exchange asset copy
 
 [source,Example]
@@ -1478,6 +1508,42 @@ This command deletes the Exchange asset passed in <assetIdentifier>.
 
 [WARNING]
 This command does not prompt twice before deleting. If you send a delete instruction, it does not ask for confirmation.
+
+Argument "assetIdentifier" must be formatted as: <groupId>/<assetId>/<version>. +
+This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
+
+=== exchange asset deprecate
+
+[source,Example]
+----
+> exchange asset deprecate <assetIdentifier>
+----
+
+This command deprecates the asset passed in <assetIdentifier>.
+
+Argument "assetIdentifier" must be formatted as: <groupId>/<assetId>/<version>. +
+This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
+
+=== exchange asset undeprecate
+
+[source,Example]
+----
+> exchange asset undeprecate <assetIdentifier>
+----
+
+This command undeprecates the asset passed in <assetIdentifier>.
+
+Argument "assetIdentifier" must be formatted as: <groupId>/<assetId>/<version>. +
+This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
+
+=== exchange asset describe
+
+[source,Example]
+----
+> exchange asset describe <assetIdentifier>
+----
+
+This command describes the asset passed in <assetIdentifier>.
 
 Argument "assetIdentifier" must be formatted as: <groupId>/<assetId>/<version>. +
 This command does not take any options, except for the default ones: `--help`, `-f`/`--fields` and `-o`/`--output`.
